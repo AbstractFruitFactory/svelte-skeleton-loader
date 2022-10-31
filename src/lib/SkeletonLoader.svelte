@@ -1,7 +1,4 @@
 <script lang="ts">
-	import createEmotion from '@emotion/css/create-instance';
-	const { css, keyframes } = createEmotion({ key: 'some-key' });
-
 	let customClassName = '';
 	let Wrapper: ConstructorOfATypedSvelteComponent | null = null;
 	export let count = 1;
@@ -15,32 +12,6 @@
 	export const defaultBaseColor = '#eee';
 
 	export const defaultHighlightColor = '#f5f5f5';
-
-	export const skeletonKeyframes = keyframes`
-    0% {
-      background-position: -200px 0;
-    }
-    100% {
-      background-position: calc(200px + 100%) 0;
-    }
-  `;
-
-	export const skeletonStyles = css`
-		background-color: ${defaultBaseColor};
-		background-image: linear-gradient(
-			90deg,
-			${defaultBaseColor},
-			${defaultHighlightColor},
-			${defaultBaseColor}
-		);
-		background-size: 200px 100%;
-		background-repeat: no-repeat;
-		border-radius: 4px;
-		display: inline-block;
-		line-height: 1;
-		width: 100%;
-		animation: ${skeletonKeyframes} ${duration}s ease-in-out infinite;
-	`;
 
 	const elements: any = [];
 
@@ -62,41 +33,71 @@
 		let className = 'svelte-loader-skeleton';
 		if (customClassName) {
 			className += ' ' + customClassName;
-			console.log(className);
 		}
 		elements.push({
 			className: className,
-			defaultStyles: skeletonStyles,
 			style
 		});
 	}
 </script>
 
-{#if Wrapper}
-	{#each elements as element}
-		<span>
-			<svelte:component this={Wrapper}>
-				<span
-					class="{`element.className`} {element.defaultStyles}"
-					style="width:{element.style.width}; border-radius:{element.style
-						.borderRadius}; height:{element.style.height}"
-				>
-					&zwnj;
-				</span>
-			</svelte:component>
-		</span>
-	{/each}
-{:else}
-	{#each elements as element}
-		<span
-			class="{element.className} {element.defaultStyles}"
-			style="width:{element.style.width}; border-radius:{element.style
-				.borderRadius}; height:{element.style.height}"
-		>
-			&zwnj;
-		</span>
-	{/each}
-{/if}
+<div
+	style="
+		--defaultBaseColor: {defaultBaseColor};
+		--defaultHighlightColor: {defaultHighlightColor};
+		--duration: {duration}s;
+	"
+>
+	{#if Wrapper}
+		{#each elements as element}
+			<span>
+				<svelte:component this={Wrapper}>
+					<span
+						class={element.className}
+						style="width:{element.style.width}; border-radius:{element.style
+							.borderRadius}; height:{element.style.height}"
+					>
+						&zwnj;
+					</span>
+				</svelte:component>
+			</span>
+		{/each}
+	{:else}
+		{#each elements as element}
+			<span
+				class={element.className}
+				style="width:{element.style.width}; border-radius:{element.style
+					.borderRadius}; height:{element.style.height}"
+			>
+				&zwnj;
+			</span>
+		{/each}
+	{/if}
+</div>
 
 <style>
+	@keyframes slide {
+		0% {
+			background-position: -200px 0;
+		}
+		100% {
+			background-position: calc(200px + 100%) 0;
+		}
+	}
+	.svelte-loader-skeleton {
+		background-color: var(--defaultBaseColor);
+		background-image: linear-gradient(
+			90deg,
+			var(--defaultBaseColor),
+			var(--defaultHighlightColor),
+			var(--defaultBaseColor)
+		);
+		background-size: 200px 100%;
+		background-repeat: no-repeat;
+		border-radius: 4px;
+		display: inline-block;
+		line-height: 1;
+		width: 100%;
+		animation: slide var(--duration) ease-in-out infinite;
+	}
 </style>
